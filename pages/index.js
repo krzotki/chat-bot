@@ -64,10 +64,10 @@ export default function Home() {
         <form onSubmit={onSubmit}>
           <input
             type="text"
-            name="animal"
             placeholder="Ask your question:"
             value={prompt}
             onChange={(e) => setPrompt(e.target.value)}
+            autoComplete="off"
           />
           <input type="submit" value="Send" />
         </form>
