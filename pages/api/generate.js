@@ -14,7 +14,7 @@ export default async function (req, res) {
     model: "text-davinci-003",
     prompt: context + req.body.prompt,
     temperature: 0.9,
-    max_tokens: 256,
+    max_tokens: 2048,
     stop: [" Human:", " AI:"],
     top_p: 1,
     frequency_penalty: 0,
