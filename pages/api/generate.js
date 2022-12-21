@@ -6,7 +6,7 @@ const configuration = new Configuration({
 const openai = new OpenAIApi(configuration);
 
 const context =
-  "The following is a conversation with an AI assistant. The assistant is helpful, creative, clever, and very friendly. He can code and wraps the code with '```' and puts the language name after the first '```' ";
+  "The following is a conversation with an AI assistant. The assistant is helpful, creative, clever, and very friendly. He can code and wraps the code with '```' and puts the language name in lower case after the first '```' ";
 
 export default async function (req, res) {
   console.log(req.body.prompt);
