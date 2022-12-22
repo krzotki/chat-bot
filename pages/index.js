@@ -32,8 +32,8 @@ SyntaxHighlighter.registerLanguage("python", python);
 const CodeBlock = {
   code({ node, inline, className, children, ...props }) {
     const match = /language-(\w+)/.exec(className || "");
-    if (match && match[1].toLowerCase() === "latex") {
-      const tex = String(children).replace(/\n$/, "");
+    if (match && match[1].toLowerCase().includes("tex")) {
+      const tex = String(children).replace("```", "");
       return <MathComponent tex={tex} />;
     }
 
@@ -92,6 +92,8 @@ export default function Home() {
       },
     ]);
   }
+
+  console.log({ messages });
 
   return (
     <div className={styles.container}>

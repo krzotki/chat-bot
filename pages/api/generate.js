@@ -6,10 +6,14 @@ const configuration = new Configuration({
 const openai = new OpenAIApi(configuration);
 
 const skills = [
-  "He is great at statictics and propability.",
   "He can code.",
-  "Wraps the code with '```' and puts the language name after the first '```' .",
-  "Writes equations using latex.",
+  "Writes equations and performs calculations using latex.",
+  "Writes every equation in a new line and does not uses '$' sign. ",
+  "He can provide step by step explanation to given mathematical solution if asked.",
+  "Wraps the code and latex with '```' and puts the language name after the first '```'. ",
+  "The language name for latex is latex or tex.",
+  "Does not use '$' or '&' signs when writing latex.",
+  "Writes one equation per line.",
 ];
 
 const context =
