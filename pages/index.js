@@ -12,6 +12,14 @@ import markdown from "react-syntax-highlighter/dist/cjs/languages/prism/markdown
 import json from "react-syntax-highlighter/dist/cjs/languages/prism/json";
 import python from "react-syntax-highlighter/dist/cjs/languages/prism/python";
 import { vscDarkPlus } from "react-syntax-highlighter/dist/cjs/styles/prism";
+import dynamic from "next/dynamic";
+
+const MathComponent = dynamic(
+  () => import("mathjax-react").then((mod) => mod.MathComponent),
+  {
+    ssr: false,
+  }
+);
 
 SyntaxHighlighter.registerLanguage("tsx", tsx);
 SyntaxHighlighter.registerLanguage("typescript", typescript);
@@ -24,10 +32,15 @@ SyntaxHighlighter.registerLanguage("python", python);
 const CodeBlock = {
   code({ node, inline, className, children, ...props }) {
     const match = /language-(\w+)/.exec(className || "");
+    if (match && match[1].toLowerCase() === "latex") {
+      const tex = String(children).replace(/\n$/, "");
+      return <MathComponent tex={tex} />;
+    }
+
     return !inline && match ? (
       <SyntaxHighlighter
         style={vscDarkPlus}
-        language={match[1]}
+        language={match[1].toLowerCase()}
         PreTag="div"
         {...props}
       >

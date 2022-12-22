@@ -5,11 +5,18 @@ const configuration = new Configuration({
 });
 const openai = new OpenAIApi(configuration);
 
+const skills = [
+  "He is great at statictics and propability.",
+  "He can code.",
+  "Wraps the code with '```' and puts the language name after the first '```' .",
+  "Writes equations using latex.",
+];
+
 const context =
-  "The following is a conversation with an AI assistant. The assistant is helpful, creative, clever, and very friendly. He can code and wraps the code with '```' and puts the language name after the first '```' ";
+  "The following is a conversation with an AI assistant. The assistant is helpful, creative, clever, and very friendly." +
+  skills.join(" ");
 
 export default async function (req, res) {
-  console.log(req.body.prompt);
   const completion = await openai.createCompletion({
     model: "text-davinci-003",
     prompt: context + req.body.prompt,
@@ -19,7 +26,7 @@ export default async function (req, res) {
     top_p: 1,
     frequency_penalty: 0,
     presence_penalty: 0.6,
-    best_of: 1
+    best_of: 1,
   });
 
   res.status(200).json({ result: completion.data.choices });
