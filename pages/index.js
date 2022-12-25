@@ -29,11 +29,27 @@ SyntaxHighlighter.registerLanguage("markdown", markdown);
 SyntaxHighlighter.registerLanguage("json", json);
 SyntaxHighlighter.registerLanguage("python", python);
 
+const interpolateLatex = (text, latex) => {
+  const splitted = text.split("$");
+  console.log({ splitted, latex });
+  for (let i = 0; i < latex.length; i++) {
+    const tex = latex[i][0].replaceAll("$", "");
+    splitted[2 * (i + 1) - 1] = (
+      <span className={styles.latex}>
+        <MathComponent key={i} tex={tex} />
+      </span>
+    );
+  }
+  return splitted;
+};
+
 const CodeBlock = {
   code({ node, inline, className, children, ...props }) {
+    console.log({ node });
+
     const match = /language-(\w+)/.exec(className || "");
     if (match && match[1].toLowerCase().includes("tex")) {
-      const tex = String(children).replace("```", "");
+      const tex = String(children).replaceAll("```", "").replaceAll("$", "");
       return <MathComponent tex={tex} />;
     }
 
@@ -51,6 +67,9 @@ const CodeBlock = {
         {children}
       </code>
     );
+  },
+  span({ node, inline, className, children, ...props }) {
+    return <span>SPAN? {children}</span>;
   },
 };
 
@@ -104,19 +123,30 @@ export default function Home() {
 
       <main className={styles.main}>
         <div className={styles.result} ref={resultsRef}>
-          {[...messages].reverse().map(({ sender, message }, index) => (
-            <div
-              className={`${styles.message} ${
-                sender.includes("Human") && styles.human
-              }`}
-              key={index}
-            >
-              {sender}
-              <ReactMarkdown rehypePlugins={[rehypeRaw]} components={CodeBlock}>
-                {message}
-              </ReactMarkdown>
-            </div>
-          ))}
+          {[...messages].reverse().map(({ sender, message }, index) => {
+            const latex = [...message.matchAll(/\$.*?\$/g)];
+
+            return (
+              <div
+                className={`${styles.message} ${
+                  sender.includes("Human") && styles.human
+                }`}
+                key={index}
+              >
+                {sender}
+                {latex.length ? (
+                  interpolateLatex(message, latex)
+                ) : (
+                  <ReactMarkdown
+                    rehypePlugins={[rehypeRaw]}
+                    components={{ CodeBlock }}
+                  >
+                    {message}
+                  </ReactMarkdown>
+                )}
+              </div>
+            );
+          })}
         </div>
         <form onSubmit={onSubmit}>
           <input
