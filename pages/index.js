@@ -26,6 +26,7 @@ SyntaxHighlighter.registerLanguage("python", python);
 
 const CodeBlock = {
   code({ node, inline, className, children, ...props }) {
+    const match = /language-(\w+)/.exec(className || "");
     return !inline && match ? (
       <SyntaxHighlighter
         style={vscDarkPlus}
@@ -97,7 +98,7 @@ export default function Home() {
             <ReactMarkdown
               rehypePlugins={[rehypeRaw, rehypeKatex]}
               remarkPlugins={[remarkMath]}
-              components={{ CodeBlock }}
+              components={CodeBlock}
             >
               {message}
             </ReactMarkdown>

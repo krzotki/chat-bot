@@ -103,6 +103,7 @@
 .message {
   padding: 1em;
   border-radius: 10px;
+  line-height: 2em;
 }
 
 .message.human {
@@ -113,8 +114,4 @@
 .container {
   width: 100%;
   height: 100%;
-}
-
-.latex {
-  padding: 0 0.5em;
 }
