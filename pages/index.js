@@ -46,7 +46,7 @@ const CodeBlock = {
 
 export default function Home() {
   const [prompt, setPrompt] = useState("");
-
+  const [loading, setLoading] = useState(false);
   const [messages, setMessages] = useState([]);
 
   const onSubmit = useCallback(
@@ -63,7 +63,7 @@ export default function Home() {
       );
 
       setPrompt("");
-
+      setLoading(true);
       const response = await fetch("/api/generate", {
         method: "POST",
         headers: {
@@ -71,7 +71,7 @@ export default function Home() {
         },
         body: JSON.stringify({ prompt: conversation + "AI: " }),
       });
-
+      setLoading(false);
       const { result } = await response.json();
       setMessages((currentMessages) => [
         ...currentMessages,
@@ -87,6 +87,8 @@ export default function Home() {
   const renderedMessages = useMemo(
     () =>
       [...messages].reverse().map(({ sender, message }, index) => {
+        const latex = [...message.matchAll(/\$.*?\$/g)];
+        const formatted = latex.length ? message.replaceAll("`", "") : message;
         return (
           <div
             className={`${styles.message} ${
@@ -100,7 +102,7 @@ export default function Home() {
               remarkPlugins={[remarkMath]}
               components={CodeBlock}
             >
-              {message}
+              {formatted}
             </ReactMarkdown>
           </div>
         );
@@ -122,10 +124,11 @@ export default function Home() {
         <form onSubmit={onSubmit}>
           <input
             type="text"
-            placeholder="Ask your question:"
+            placeholder={loading ? "AI is thinking..." : "Ask your question:"}
             value={prompt}
             onChange={(e) => setPrompt(e.target.value)}
             autoComplete="off"
+            disabled={loading}
           />
           <input type="submit" value="Send" />
         </form>
