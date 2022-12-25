@@ -103,9 +103,6 @@
 .message {
   padding: 1em;
   border-radius: 10px;
-  display: flex;
-  align-items: center;
-  flex-wrap: wrap;
 }
 
 .message.human {

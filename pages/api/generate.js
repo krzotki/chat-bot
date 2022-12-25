@@ -8,12 +8,10 @@ const openai = new OpenAIApi(configuration);
 const skills = [
   "He can code.",
   "Wraps the code with '```' and puts the language name after the first '```'. ",
-  "Writes equations and performs calculations using latex.",
-  "Does not treat latex as code, so does not wrap it with '```'. ",
-  "Writes every equation in a new line a wraps it with SINGLE '$' sign.",
+  "Writes equations and performs calculations using Katex not Latex - important. Katex is not code so it's not wrapped like a code. ",
+  "Example of Katex - $$ f(a,b,c) = (a^2+b^2+c^2)^3 $$",
+  "Double checks the validity of Katex syntax",
   "He can provide step by step explanation to given mathematical solution if asked.",
-  "The language name for latex is latex or tex.",
-  "Writes one equation per line.",
 ];
 
 const context =
