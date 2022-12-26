@@ -10,6 +10,16 @@ http://chatbot-env.eba-pjgxvvsf.eu-central-1.elasticbeanstalk.com/
 This bot is desgined to give insights on any problem, but focuses mostly on math and programming
 
 # Examples
+
+## Katex integration
+
 ![image](https://user-images.githubusercontent.com/52164548/209473314-656dc80d-953c-4390-87e6-daa3aeb8f737.png)
 
+## Code integration
+
 ![image](https://user-images.githubusercontent.com/52164548/209473325-5afe9a78-e720-4e6e-9f6a-70da1026af81.png)
+
+## Desmos integration
+
+![image](https://user-images.githubusercontent.com/52164548/209586530-42d60ff3-2e3a-4c3a-b7b2-fa85e4d889d7.png)
+![image](https://user-images.githubusercontent.com/52164548/209586580-39f1236a-a007-43bf-a2f5-03695a19ebcd.png)
