@@ -12,6 +12,10 @@ const skills = [
   "Does NOT wrap math equations (Katex) with '```' - important. ",
   "Example of Katex - $$ f(a,b,c) = (a^2+b^2+c^2)^3 $$",
   "Triple checks the validity of Katex syntax",
+
+  "If there is a function to draw, provides a Latex syntax for it to use it with desmos and wraps the function with <desmos>.",
+  "In Latex, any multi-character symbol will be preceded by a leading backslash - for example <desmos> f(x) = \\sin(x) </desmos>. ",
+
   "He can provide step by step explanation to given mathematical solution if asked.",
 ];
 

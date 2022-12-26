@@ -15,6 +15,7 @@ import { vscDarkPlus } from "react-syntax-highlighter/dist/cjs/styles/prism";
 import remarkMath from "remark-math";
 import rehypeKatex from "rehype-katex";
 import "katex/dist/katex.min.css"; // `rehype-katex` does not import the CSS for you
+import { DesmosCalculator } from "./desmos";
 
 SyntaxHighlighter.registerLanguage("tsx", tsx);
 SyntaxHighlighter.registerLanguage("typescript", typescript);
@@ -88,7 +89,17 @@ export default function Home() {
     () =>
       [...messages].reverse().map(({ sender, message }, index) => {
         const latex = [...message.matchAll(/\$.*?\$/g)];
-        const formatted = latex.length ? message.replaceAll("`", "") : message;
+        let formatted = latex.length ? message.replaceAll("`", "") : message;
+        let desmos = null;
+        formatted = formatted.replace(
+          /(?:<desmos>|<Desmos>)([\w\W\s]*)(?:<\/desmos>|<\/Desmos>)/g,
+          (raw, extracted) => {
+            desmos = extracted.replaceAll("\n", "");
+            return extracted;
+          }
+        );
+
+        console.log({ desmos });
         return (
           <div
             className={`${styles.message} ${
@@ -104,6 +115,7 @@ export default function Home() {
             >
               {formatted}
             </ReactMarkdown>
+            {desmos && <DesmosCalculator formula={desmos} />}
           </div>
         );
       }),
