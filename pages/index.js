@@ -99,7 +99,6 @@ export default function Home() {
           }
         );
 
-        console.log({ desmos });
         return (
           <div
             className={`${styles.message} ${
