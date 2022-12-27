@@ -49,16 +49,50 @@ export default function Home() {
   const [prompt, setPrompt] = useState("");
   const [loading, setLoading] = useState(false);
   const [messages, setMessages] = useState([]);
+  const [image, setImage] = useState();
+  const fileInputRef = useRef();
+
+  const uploadImage = useCallback(async (evt) => {
+    const files = evt.target.files;
+    if (!files.length) {
+      return;
+    }
+    const data = new FormData();
+    data.append("name", files[0].name);
+    data.append("file", files[0]);
+
+    const imageResponse = await fetch("/api/upload", {
+      method: "POST",
+      credentials: "same-origin",
+      body: data,
+    });
+
+    const { image } = await imageResponse.json();
+
+    // const image = {
+    //   Location:
+    //     "https://krzotki-chatbot-images.s3.eu-central-1.amazonaws.com/1672154559985_Bez%C2%A0tytu%C5%82u.png",
+    // };
+
+    setImage(image);
+  }, []);
 
   const onSubmit = useCallback(
-    async function onSubmit(event) {
+    async function (event) {
       event.preventDefault();
 
       if (loading) {
         return;
       }
 
-      const newMessages = [...messages, { sender: "Human: ", message: prompt }];
+      const newMessages = [
+        ...messages,
+        {
+          sender: "Human: ",
+          message:
+            prompt + (image ? `\n ![attachment](${image?.Location})` : ""),
+        },
+      ];
 
       setMessages(newMessages);
 
@@ -69,24 +103,32 @@ export default function Home() {
 
       setPrompt("");
       setLoading(true);
+
       const response = await fetch("/api/generate", {
         method: "POST",
         headers: {
-          "Content-Type": "application/json",
+          "content-type": "application/json",
         },
-        body: JSON.stringify({ prompt: conversation + "AI: " }),
+        body: JSON.stringify({
+          prompt: conversation,
+          attachment: image?.Location,
+        }),
       });
+
+      setImage(undefined);
+      fileInputRef.current.value = "";
+
       setLoading(false);
       const { result } = await response.json();
       setMessages((currentMessages) => [
         ...currentMessages,
         {
           sender: "AI: ",
-          message: result[0].text,
+          message: result,
         },
       ]);
     },
-    [messages, prompt, loading]
+    [messages, prompt, loading, image]
   );
 
   const renderedMessages = useMemo(
@@ -104,7 +146,7 @@ export default function Home() {
           }
         );
 
-        console.log({desmos})
+        console.log({ desmos });
 
         return (
           <div
@@ -148,6 +190,22 @@ export default function Home() {
             autoComplete="off"
             autoFocus={true}
           />
+          <div
+            className={styles.attachment}
+            onClick={() => fileInputRef.current.click()}
+          >
+            <input
+              type="file"
+              onChange={uploadImage}
+              ref={fileInputRef}
+              hidden
+            />
+            {image ? (
+              <img src={image.Location} />
+            ) : (
+              <img src="/attachment.svg" />
+            )}
+          </div>
           <input type="submit" value="Send" />
         </form>
       </main>

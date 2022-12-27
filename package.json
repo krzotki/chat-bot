@@ -8,8 +8,12 @@
     "start": "next build && node prod.js"
   },
   "dependencies": {
+    "aws-sdk": "^2.1282.0",
+    "formidable": "^2.1.1",
+    "fs": "^0.0.1-security",
     "mathjax-react": "^2.0.1",
     "next": "12.3.1",
+    "next-connect": "^0.13.0",
     "openai": "^3.0.0",
     "react": "17.0.2",
     "react-dom": "17.0.2",

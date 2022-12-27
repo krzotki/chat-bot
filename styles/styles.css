@@ -11,3 +11,8 @@ body {
   background-color: #303030;
   color: #c5c6c7;
 }
+
+img {
+  max-width: clamp(20px, 100%, 500px);
+
+}
