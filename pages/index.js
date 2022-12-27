@@ -54,6 +54,10 @@ export default function Home() {
     async function onSubmit(event) {
       event.preventDefault();
 
+      if (loading) {
+        return;
+      }
+
       const newMessages = [...messages, { sender: "Human: ", message: prompt }];
 
       setMessages(newMessages);
@@ -82,7 +86,7 @@ export default function Home() {
         },
       ]);
     },
-    [messages, prompt]
+    [messages, prompt, loading]
   );
 
   const renderedMessages = useMemo(
@@ -90,14 +94,17 @@ export default function Home() {
       [...messages].reverse().map(({ sender, message }, index) => {
         const latex = [...message.matchAll(/\$.*?\$/g)];
         let formatted = latex.length ? message.replaceAll("`", "") : message;
-        let desmos = null;
+        let desmos = [];
+
         formatted = formatted.replace(
-          /(?:<desmos>|<Desmos>)([\w\W\s]*)(?:<\/desmos>|<\/Desmos>)/g,
+          /(?:<desmos>|<Desmos>)([\w\W\s]*?)(?:<\/desmos>|<\/Desmos>)/g,
           (raw, extracted) => {
-            desmos = extracted.replaceAll("\n", "");
+            desmos.push(extracted.replaceAll("\n", ""));
             return extracted;
           }
         );
+
+        console.log({desmos})
 
         return (
           <div
@@ -114,7 +121,7 @@ export default function Home() {
             >
               {formatted}
             </ReactMarkdown>
-            {desmos && <DesmosCalculator formula={desmos} />}
+            {desmos.length ? <DesmosCalculator formulas={desmos} /> : null}
           </div>
         );
       }),
@@ -139,7 +146,7 @@ export default function Home() {
             value={prompt}
             onChange={(e) => setPrompt(e.target.value)}
             autoComplete="off"
-            disabled={loading}
+            autoFocus={true}
           />
           <input type="submit" value="Send" />
         </form>

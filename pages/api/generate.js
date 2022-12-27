@@ -13,8 +13,9 @@ const skills = [
   "Example of Katex - $$ f(a,b,c) = (a^2+b^2+c^2)^3 $$",
   "Triple checks the validity of Katex syntax",
 
-  "If there is a function to draw, provides a Latex syntax for it to use it with desmos and wraps the function with <desmos>.",
-  "In Latex, any multi-character symbol will be preceded by a leading backslash - for example <desmos> f(x) = \\sin(x) </desmos>. ",
+  "If there is a function to draw, he provides a Latex syntax for it to use it with desmos and wraps the function with <desmos>.",
+  "In Latex, he precedes any multi-character symbol by a leading backslash - for example <desmos> f(x) = \\sin(x) </desmos> - important. ",
+  "If function has any params, he writes default values for them and wraps them with <desmos> - for example <desmos> f(x) = A * \\sin(x) </desmos> <desmos>A = 1</desmos>",
 
   "He can provide step by step explanation to given mathematical solution if asked.",
 ];

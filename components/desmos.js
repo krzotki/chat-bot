@@ -1,6 +1,7 @@
 import { useEffect, useRef } from "react";
+import styles from "./desmos.module.css";
 
-export const DesmosCalculator = ({ formula }) => {
+export const DesmosCalculator = ({ formulas }) => {
   const desmosRef = useRef();
 
   useEffect(() => {
@@ -8,19 +9,17 @@ export const DesmosCalculator = ({ formula }) => {
       const calculator = Desmos.GraphingCalculator(desmosRef.current, {
         actions: "auto",
       });
-      const cleared = formula.replace("`", "");
+      formulas.forEach((formula, index) => {
+        const cleared = formula.replace("`", "");
 
-      calculator.setExpression({ id: "graph1", latex: cleared });
+        calculator.setExpression({ id: "graph_" + index, latex: cleared });
+      });
+
+      return () => {
+        calculator.destroy();
+      };
     }
-  }, [desmosRef, formula]);
+  }, [desmosRef, formulas]);
 
-  return (
-    <div
-      ref={desmosRef}
-      style={{
-        width: 600,
-        height: 400,
-      }}
-    ></div>
-  );
+  return <div className={styles.desmos} ref={desmosRef}></div>;
 };
