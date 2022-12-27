@@ -22,4 +22,8 @@ This bot is desgined to give insights on any problem, but focuses mostly on math
 ## Desmos integration
 
 ![image](https://user-images.githubusercontent.com/52164548/209586530-42d60ff3-2e3a-4c3a-b7b2-fa85e4d889d7.png)
-![image](https://user-images.githubusercontent.com/52164548/209586580-39f1236a-a007-43bf-a2f5-03695a19ebcd.png)
+
+## Mathpix integration - solving equations from image
+![Zrzut ekranu 2022-12-27 164543](https://user-images.githubusercontent.com/52164548/209691665-63662241-36b1-42ce-a160-2c5c4491bd77.png)
+![Zrzut ekranu 2022-12-27 164918](https://user-images.githubusercontent.com/52164548/209691713-9a3356b2-7576-4666-879f-fbad6ce48876.png)
+
