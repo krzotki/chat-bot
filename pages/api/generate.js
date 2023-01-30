@@ -5,7 +5,10 @@ export const configuration = new Configuration({
 });
 const openai = new OpenAIApi(configuration);
 
-const skills = [
+const defaultContext =
+  "The following is a conversation with an AI assistant. The assistant is helpful, creative, clever, and very friendly.";
+
+const solverSkills = [
   "He can code and is very good at math.",
   "Wraps the code with '```' and puts the language name after the first '```'. ",
   "Writes equations and performs calculations using Katex not Latex - important.",
@@ -21,12 +24,22 @@ const skills = [
   "He can provide step by step explanation to given mathematical solution if asked.",
 ];
 
-const context =
-  "The following is a conversation with an AI assistant. The assistant is helpful, creative, clever, and very friendly." +
-  skills.join(" ");
+const solverContext = defaultContext + solverSkills.join(" ");
+
+const thesisSkills = [
+  "He is sciencist.",
+  "He wrote and reviewed thousands of computer science thesis.",
+  "He knows all about modern and classic algorithms.",
+  "He always provides source of his information in form of article names or links.",
+  "He talks in scientific language.",
+];
+
+const thesisContext = defaultContext + thesisSkills.join(" ");
 
 export default async function (req, res) {
   let image = null;
+
+  const context = req.body.context === "solver" ? solverContext : thesisContext;
 
   const attachment = req.body.attachment;
 

@@ -16,6 +16,7 @@ import remarkMath from "remark-math";
 import rehypeKatex from "rehype-katex";
 import "katex/dist/katex.min.css"; // `rehype-katex` does not import the CSS for you
 import { DesmosCalculator } from "../components/desmos";
+import { useDefaultLogic } from "@client";
 
 SyntaxHighlighter.registerLanguage("tsx", tsx);
 SyntaxHighlighter.registerLanguage("typescript", typescript);
@@ -46,90 +47,16 @@ const CodeBlock = {
 };
 
 export default function Home() {
-  const [prompt, setPrompt] = useState("");
-  const [loading, setLoading] = useState(false);
-  const [messages, setMessages] = useState([]);
-  const [image, setImage] = useState();
-  const fileInputRef = useRef();
-
-  const uploadImage = useCallback(async (evt) => {
-    const files = evt.target.files;
-    if (!files.length) {
-      return;
-    }
-    const data = new FormData();
-    data.append("name", files[0].name);
-    data.append("file", files[0]);
-
-    const imageResponse = await fetch("/api/upload", {
-      method: "POST",
-      credentials: "same-origin",
-      body: data,
-    });
-
-    const { image } = await imageResponse.json();
-
-    // const image = {
-    //   Location:
-    //     "https://krzotki-chatbot-images.s3.eu-central-1.amazonaws.com/1672154559985_Bez%C2%A0tytu%C5%82u.png",
-    // };
-
-    setImage(image);
-  }, []);
-
-  const onSubmit = useCallback(
-    async function (event) {
-      event.preventDefault();
-
-      if (loading) {
-        return;
-      }
-
-      const newMessages = [
-        ...messages,
-        {
-          sender: "Human: ",
-          message:
-            prompt + (image ? `\n ![attachment](${image?.Location})` : ""),
-        },
-      ];
-
-      setMessages(newMessages);
-
-      const conversation = newMessages.reduce(
-        (prev, curr, index) => prev + curr.sender + curr.message + "\n",
-        ""
-      );
-
-      setPrompt("");
-      setLoading(true);
-
-      const response = await fetch("/api/generate", {
-        method: "POST",
-        headers: {
-          "content-type": "application/json",
-        },
-        body: JSON.stringify({
-          prompt: conversation,
-          attachment: image?.Location,
-        }),
-      });
-
-      setImage(undefined);
-      fileInputRef.current.value = "";
-
-      setLoading(false);
-      const { result } = await response.json();
-      setMessages((currentMessages) => [
-        ...currentMessages,
-        {
-          sender: "AI: ",
-          message: result,
-        },
-      ]);
-    },
-    [messages, prompt, loading, image]
-  );
+  const {
+    messages,
+    onSubmit,
+    loading,
+    prompt,
+    setPrompt,
+    fileInputRef,
+    uploadImage,
+    image,
+  } = useDefaultLogic();
 
   const renderedMessages = useMemo(
     () =>
@@ -170,8 +97,6 @@ export default function Home() {
     [messages]
   );
 
-  console.log({ messages });
-
   return (
     <div className={styles.container}>
       <Head>
@@ -181,7 +106,7 @@ export default function Home() {
 
       <main className={styles.main}>
         <div className={styles.result}>{renderedMessages}</div>
-        <form onSubmit={onSubmit}>
+        <form onSubmit={(evt) => onSubmit(evt, "thesis")}>
           <input
             type="text"
             placeholder={loading ? "AI is thinking..." : "Ask your question:"}
