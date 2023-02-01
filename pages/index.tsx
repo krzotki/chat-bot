@@ -56,6 +56,9 @@ export default function Home() {
     fileInputRef,
     uploadImage,
     image,
+    saveConversation,
+    jsonFileInputRef,
+    loadJsonFile
   } = useDefaultLogic();
 
   const renderedMessages = useMemo(
@@ -134,6 +137,24 @@ export default function Home() {
           <input type="submit" value="Send" />
         </form>
       </main>
+      <div className={styles.topMenu}>
+        <button className={styles.button} onClick={saveConversation}>
+          Download
+        </button>
+        <button
+          className={styles.button}
+          onClick={() => jsonFileInputRef.current.click()}
+        >
+          <input
+            type="file"
+            ref={jsonFileInputRef}
+            onChange={loadJsonFile}
+            hidden
+            accept=".json"
+          />
+          Load
+        </button>
+      </div>
     </div>
   );
 }
