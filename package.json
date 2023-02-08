@@ -9,6 +9,7 @@
   },
   "dependencies": {
     "aws-sdk": "^2.1282.0",
+    "classnames": "^2.3.2",
     "formidable": "^2.1.1",
     "fs": "^0.0.1-security",
     "mathjax-react": "^2.0.1",
@@ -18,6 +19,7 @@
     "react": "17.0.2",
     "react-dom": "17.0.2",
     "react-markdown": "^8.0.4",
+    "react-speech-recognition": "^3.10.0",
     "react-syntax-highlighter": "^15.5.0",
     "rehype-katex": "^6.0.2",
     "rehype-raw": "^6.1.1",
