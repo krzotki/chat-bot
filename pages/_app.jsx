@@ -1,3 +1,4 @@
+import 'regenerator-runtime/runtime'
 import Script from "next/script";
 import "../styles/styles.css";
 
