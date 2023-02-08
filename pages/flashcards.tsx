@@ -127,35 +127,43 @@ export default function Home() {
     });
   }, []);
 
-  const onSubmitAnswer = React.useCallback(async () => {
-    const answer = answerTextareaRef?.current.value;
-    if (!answer?.length) {
-      alert("Please write an answer!");
-      return;
-    }
+  const onSubmitAnswer = React.useCallback(
+    async (override?: string) => {
+      const answer = override || answerTextareaRef?.current.value;
+      if (!answer?.length) {
+        alert("Please write an answer!");
+        return;
+      }
 
-    console.log({ currentQuestion, answer });
+      console.log({ currentQuestion, answer });
 
-    setSubmitted(true);
+      setSubmitted(true);
 
-    const { question, topic } = currentQuestion;
-    setLoading(true);
-    const response = await fetch("/api/flash_answer", {
-      method: "POST",
-      headers: {
-        "content-type": "application/json",
-      },
-      body: JSON.stringify({
-        topic,
-        question,
-        userAnswer: answer,
-      }),
-    });
+      const { question, topic } = currentQuestion;
+      setLoading(true);
+      const response = await fetch("/api/flash_answer", {
+        method: "POST",
+        headers: {
+          "content-type": "application/json",
+        },
+        body: JSON.stringify({
+          topic,
+          question,
+          userAnswer: answer,
+        }),
+      });
 
-    const { result } = await response.json();
-    setLoading(false);
-    setAiAnswer(result);
-  }, [answerTextareaRef, currentQuestion]);
+      const { result } = await response.json();
+      setLoading(false);
+      setAiAnswer(result);
+    },
+    [answerTextareaRef, currentQuestion]
+  );
+
+  const onDontKnow = React.useCallback(
+    () => onSubmitAnswer("Niestety nie znam odpowiedzi na te pytanie."),
+    [onSubmitAnswer]
+  );
 
   const nextQuestion = React.useCallback(() => {
     answerTextareaRef.current.value = "";
@@ -165,8 +173,6 @@ export default function Home() {
     setAiAnswer(undefined);
     serveQuestion(groupedQuestions);
   }, [groupedQuestions]);
-
-  console.log({ groupedQuestions, answeredQuestions });
 
   const sendTrascript = React.useCallback(
     (transcript: string) => {
@@ -195,12 +201,20 @@ export default function Home() {
             {!submitted && (
               <>
                 <Dictaphone sendTrascript={sendTrascript} />
-                <button
-                  onClick={onSubmitAnswer}
-                  className={cx(styles.button, styles.buttonBlue)}
-                >
-                  Submit answer
-                </button>
+                <div className={styles.buttons}>
+                  <button
+                    onClick={onDontKnow}
+                    className={cx(styles.button, styles.buttonRed)}
+                  >
+                    I don't know
+                  </button>
+                  <button
+                    onClick={() => onSubmitAnswer()}
+                    className={cx(styles.button, styles.buttonBlue)}
+                  >
+                    Submit answer
+                  </button>
+                </div>
               </>
             )}
             {loading && <p>AI is thinking...</p>}

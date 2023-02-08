@@ -73,6 +73,10 @@
   background-color: #6773dd;
 }
 
+.buttonRed {
+  background-color: #d8546a;
+}
+
 .question {
   overflow-y: auto;
   white-space: break-spaces;
@@ -103,4 +107,10 @@
 .answer.human {
   background-color: #535353;
   color: white;
+}
+
+.buttons {
+  width: 100%;
+  display: flex;
+  justify-content: space-evenly;
 }
