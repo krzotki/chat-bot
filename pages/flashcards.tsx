@@ -16,8 +16,7 @@ import python from "react-syntax-highlighter/dist/cjs/languages/prism/python";
 import { vscDarkPlus } from "react-syntax-highlighter/dist/cjs/styles/prism";
 import remarkMath from "remark-math";
 import rehypeKatex from "rehype-katex";
-import { Dictaphone } from "@client";
-import { tempQuestions } from "./questions";
+import { Dictaphone, tempQuestions } from "@client";
 
 SyntaxHighlighter.registerLanguage("tsx", tsx);
 SyntaxHighlighter.registerLanguage("typescript", typescript);
