@@ -77,6 +77,11 @@
   background-color: #d8546a;
 }
 
+.buttonYellow {
+  background-color: #d8b754;
+}
+
+
 .question {
   overflow-y: auto;
   white-space: break-spaces;

@@ -71,6 +71,7 @@ export default function Home() {
     let topic = "";
 
     const questions = content
+      .trimStart()
       .split("\n")
       .reduce<QuestionType[]>((prev, current) => {
         const last = prev[prev.length - 1];
@@ -161,7 +162,10 @@ export default function Home() {
   );
 
   const onDontKnow = React.useCallback(
-    () => onSubmitAnswer("Niestety nie znam odpowiedzi na te pytanie."),
+    () =>
+      onSubmitAnswer(
+        "Unfortunately, I don't know the answer to this question."
+      ),
     [onSubmitAnswer]
   );
 
@@ -213,6 +217,12 @@ export default function Home() {
                     className={cx(styles.button, styles.buttonBlue)}
                   >
                     Submit answer
+                  </button>
+                  <button
+                    onClick={nextQuestion}
+                    className={cx(styles.button, styles.buttonYellow)}
+                  >
+                    Skip
                   </button>
                 </div>
               </>

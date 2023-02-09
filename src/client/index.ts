@@ -1,3 +1,3 @@
 export * from "./useDefaultLogic";
 export * from "./Dictaphone";
-export * from "./questions";
+export * from "./questions_en";
