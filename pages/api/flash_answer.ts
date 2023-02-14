@@ -50,12 +50,14 @@ export default async function (req, res) {
     const topicSimA = compareTwoStrings(a.topic, topic);
     const questionSimA = compareTwoStrings(a.question, question);
     const userAnswerSimA = compareTwoStrings(a.userAnswer, userAnswer);
-    const simA = topicSimA * questionSimA * userAnswerSimA;
+    const ratingA = a.likes / (a.likes + a.dislikes);
+    const simA = topicSimA * questionSimA * userAnswerSimA * ratingA;
 
     const topicSimB = compareTwoStrings(b.topic, topic);
     const questionSimB = compareTwoStrings(b.question, question);
     const userAnswerSimB = compareTwoStrings(b.userAnswer, userAnswer);
-    const simB = topicSimB * questionSimB * userAnswerSimB;
+    const ratingB = b.likes / (b.likes + b.dislikes);
+    const simB = topicSimB * questionSimB * userAnswerSimB * ratingB;
 
     return simB - simA;
   });
