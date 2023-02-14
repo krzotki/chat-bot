@@ -17,6 +17,8 @@ import { vscDarkPlus } from "react-syntax-highlighter/dist/cjs/styles/prism";
 import remarkMath from "remark-math";
 import rehypeKatex from "rehype-katex";
 import { Dictaphone, tempQuestions } from "@client";
+import Image from "next/image";
+import { Rating, Typography } from "@mui/material";
 
 SyntaxHighlighter.registerLanguage("tsx", tsx);
 SyntaxHighlighter.registerLanguage("typescript", typescript);
@@ -62,6 +64,20 @@ export default function Home() {
   const [submitted, setSubmitted] = React.useState(false);
   const [loading, setLoading] = React.useState(false);
   const [aiAnswer, setAiAnswer] = React.useState();
+  const [cachedQuestion, setCachedQuestion] = React.useState(null);
+  const [hasRated, setHasRated] = React.useState(false);
+  const [error, setError] = React.useState(false);
+
+  const serveQuestion = React.useCallback((questions) => {
+    const index = Math.floor(Math.random() * questions.length);
+    const q = questions[index];
+    setCurrentQuestion(q);
+    setQuestions((current) => {
+      const newQuestions = [...current];
+      newQuestions.splice(index, 1);
+      return newQuestions;
+    });
+  }, []);
 
   const onSubmit = useCallback(() => {
     const content = textareaRef?.current.value;
@@ -115,59 +131,45 @@ export default function Home() {
 
     setQuestions(questions);
     serveQuestion(questions);
-  }, [textareaRef]);
+  }, [textareaRef, serveQuestion]);
 
-  const serveQuestion = React.useCallback((questions) => {
-    const index = Math.floor(Math.random() * questions.length);
-    const q = questions[index];
-    setCurrentQuestion(q);
-    setQuestions((current) => {
-      const newQuestions = [...current];
-      newQuestions.splice(index, 1);
-      return newQuestions;
+  const onSubmitAnswer = React.useCallback(async () => {
+    const answer = answerTextareaRef?.current.value;
+    if (!answer?.length) {
+      alert("Please write an answer!");
+      return;
+    }
+
+    setSubmitted(true);
+
+    const { question, topic } = currentQuestion;
+    setLoading(true);
+    const response = await fetch("/api/flash_answer", {
+      method: "POST",
+      headers: {
+        "content-type": "application/json",
+      },
+      body: JSON.stringify({
+        topic,
+        question,
+        userAnswer: answer,
+      }),
     });
-  }, []);
 
-  const onSubmitAnswer = React.useCallback(
-    async (override?: string) => {
-      const answer = override || answerTextareaRef?.current.value;
-      if (!answer?.length) {
-        alert("Please write an answer!");
-        return;
-      }
+    const { result, cached, error } = await response.json();
+    setLoading(false);
+    setAiAnswer(result);
+    setCachedQuestion(cached);
+    if (error) {
+      setError(true);
+    }
+  }, [answerTextareaRef, currentQuestion]);
 
-      console.log({ currentQuestion, answer });
-
-      setSubmitted(true);
-
-      const { question, topic } = currentQuestion;
-      setLoading(true);
-      const response = await fetch("/api/flash_answer", {
-        method: "POST",
-        headers: {
-          "content-type": "application/json",
-        },
-        body: JSON.stringify({
-          topic,
-          question,
-          userAnswer: answer,
-        }),
-      });
-
-      const { result } = await response.json();
-      setLoading(false);
-      setAiAnswer(result);
-    },
-    [answerTextareaRef, currentQuestion]
-  );
-
-  const onDontKnow = React.useCallback(
-    () =>
-      onSubmitAnswer(
-        "Unfortunately, I don't know the answer to this question."
-      ),
-    [onSubmitAnswer]
-  );
+  const onDontKnow = React.useCallback(() => {
+    answerTextareaRef.current.value =
+      "Unfortunately, I don't know the answer to this question.";
+    onSubmitAnswer();
+  }, [onSubmitAnswer, answerTextareaRef]);
 
   const nextQuestion = React.useCallback(() => {
     answerTextareaRef.current.value = "";
@@ -176,7 +178,10 @@ export default function Home() {
     setLoading(false);
     setAiAnswer(undefined);
     serveQuestion(groupedQuestions);
-  }, [groupedQuestions]);
+    setHasRated(false);
+    setError(false);
+    setCachedQuestion(null);
+  }, [groupedQuestions, currentQuestion, serveQuestion]);
 
   const sendTrascript = React.useCallback(
     (transcript: string) => {
@@ -184,6 +189,64 @@ export default function Home() {
     },
     [answerTextareaRef]
   );
+
+  const rateAnswer = React.useCallback(
+    async (rate: "like" | "dislike") => {
+      if (!cachedQuestion && rate === "like") {
+        await fetch("/api/save_question", {
+          method: "POST",
+          headers: {
+            "content-type": "application/json",
+          },
+          body: JSON.stringify({
+            question: currentQuestion.question,
+            answer: aiAnswer,
+            userAnswer: answerTextareaRef.current.value,
+            topic: currentQuestion.topic,
+          }),
+        });
+      }
+
+      if (cachedQuestion) {
+        const response = await fetch("/api/rate_flashcard", {
+          method: "POST",
+          headers: {
+            "content-type": "application/json",
+          },
+          body: JSON.stringify({
+            uuid: cachedQuestion.uuid,
+            rate,
+          }),
+        });
+
+        const { likes, dislikes } = await response.json();
+        setCachedQuestion((question) => ({
+          ...question,
+          likes,
+          dislikes,
+        }));
+      }
+
+      setHasRated(true);
+    },
+    [answerTextareaRef, aiAnswer, cachedQuestion, currentQuestion]
+  );
+
+  const retryAnswer = React.useCallback(() => {
+    onSubmitAnswer();
+    setError(false);
+  }, [onSubmitAnswer]);
+
+  const rating = React.useMemo(() => {
+    if (!cachedQuestion) {
+      return undefined;
+    }
+    const { likes, dislikes } = cachedQuestion;
+    const count = likes + dislikes;
+
+    const rating = (likes / count) * 5;
+    return { count, rating };
+  }, [cachedQuestion]);
 
   return (
     <div className={styles.container}>
@@ -210,7 +273,7 @@ export default function Home() {
                     onClick={onDontKnow}
                     className={cx(styles.button, styles.buttonRed)}
                   >
-                    I don't know
+                    I do not know
                   </button>
                   <button
                     onClick={() => onSubmitAnswer()}
@@ -228,6 +291,17 @@ export default function Home() {
               </>
             )}
             {loading && <p>AI is thinking...</p>}
+            {error && (
+              <div className={styles.error}>
+                <p>An error occurred.</p>
+                <button
+                  onClick={retryAnswer}
+                  className={cx(styles.button, styles.buttonBlue)}
+                >
+                  Try again
+                </button>
+              </div>
+            )}
             {aiAnswer && (
               <>
                 <div className={cx(styles.answer)}>
@@ -238,13 +312,52 @@ export default function Home() {
                   >
                     {aiAnswer}
                   </ReactMarkdown>
+                  {rating && (
+                    <div>
+                      <Typography component="legend">Rating</Typography>
+                      <Rating name="read-only" value={rating.rating} readOnly />
+                      <Typography component="legend">
+                        Votes: {rating.count}
+                      </Typography>
+                    </div>
+                  )}
                 </div>
-                <button
-                  onClick={nextQuestion}
-                  className={cx(styles.button, styles.buttonBlue)}
-                >
-                  Next question
-                </button>
+                <div className={styles.buttons}>
+                  {!hasRated ? (
+                    <>
+                      <button
+                        className={cx(styles.buttonRound)}
+                        onClick={() => rateAnswer("like")}
+                      >
+                        <Image
+                          src="/like.png"
+                          width={30}
+                          height={30}
+                          alt="like"
+                        />
+                      </button>
+                      <button
+                        className={cx(styles.buttonRound)}
+                        onClick={() => rateAnswer("dislike")}
+                      >
+                        <Image
+                          src="/dislike.png"
+                          width={30}
+                          height={30}
+                          alt="dislike"
+                        />
+                      </button>
+                    </>
+                  ) : (
+                    <div className={styles.thanks}>Thanks for voting!</div>
+                  )}
+                  <button
+                    onClick={nextQuestion}
+                    className={cx(styles.button, styles.buttonBlue)}
+                  >
+                    Next question
+                  </button>
+                </div>
               </>
             )}
           </div>

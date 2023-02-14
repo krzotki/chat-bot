@@ -21,7 +21,7 @@ export const Dictaphone = ({ sendTrascript }: PropsType) => {
   }, [sendTrascript, transcript]);
 
   if (!browserSupportsSpeechRecognition) {
-    return <span>Browser doesn't support speech recognition.</span>;
+    return <span>Browser does not support speech recognition.</span>;
   }
 
   return (

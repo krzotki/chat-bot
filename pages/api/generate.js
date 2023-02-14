@@ -91,8 +91,6 @@ export default async function (req, res) {
   const prompt =
     context + req.body.prompt + (image ? image.text : ".") + "AI: ";
 
-  console.log({ prompt });
-
   const completion = await openai.createCompletion({
     model: "text-davinci-003",
     prompt,
@@ -102,7 +100,7 @@ export default async function (req, res) {
     top_p: 1,
     frequency_penalty: 0,
     presence_penalty: 0.6,
-    best_of: 2,
+    best_of: 1,
   });
 
   res.status(200).json({
