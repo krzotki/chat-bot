@@ -39,15 +39,25 @@ export default async function (req, res) {
     const questionSim = compareTwoStrings(item.question, question);
     const userAnswerSim = compareTwoStrings(item.userAnswer, userAnswer);
 
-    if (topicSim >= TOPIC_THRESHOLD && questionSim >= QUESTION_THRESHOLD) {
-      console.log({ topicSim, questionSim, userAnswerSim });
-    }
+    console.log({ topicSim, questionSim, userAnswerSim });
 
     return (
       topicSim >= TOPIC_THRESHOLD &&
       questionSim >= QUESTION_THRESHOLD &&
       userAnswerSim >= USER_ANSWER_THRESHOLD
     );
+  }).sort((a, b) => {
+    const topicSimA = compareTwoStrings(a.topic, topic);
+    const questionSimA = compareTwoStrings(a.question, question);
+    const userAnswerSimA = compareTwoStrings(a.userAnswer, userAnswer);
+    const simA = topicSimA * questionSimA * userAnswerSimA;
+
+    const topicSimB = compareTwoStrings(b.topic, topic);
+    const questionSimB = compareTwoStrings(b.question, question);
+    const userAnswerSimB = compareTwoStrings(b.userAnswer, userAnswer);
+    const simB = topicSimB * questionSimB * userAnswerSimB;
+
+    return simB - simA;
   });
 
   console.log({ similarQuestions });
@@ -64,7 +74,7 @@ export default async function (req, res) {
   const prompt = `${context} \n Topic: ${topic} \n Question: ${question} \n User answer: ${userAnswer} \n Assistant answer: `;
 
   try {
-    console.log({prompt})
+    console.log({ prompt });
     const completion = await openai.createCompletion({
       model: "text-davinci-003",
       prompt,
