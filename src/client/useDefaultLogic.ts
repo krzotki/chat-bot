@@ -16,26 +16,23 @@ export const useDefaultLogic = () => {
   const fileInputRef = useRef<HTMLInputElement>();
   const jsonFileInputRef = useRef<HTMLInputElement>();
 
-  const loadJsonFile = useCallback(
-    (e) => {
-      const file = e.target.files[0];
-      console.log({file})
-      if (!file) {
+  const loadJsonFile = useCallback((e) => {
+    const file = e.target.files[0];
+    console.log({ file });
+    if (!file) {
+      return;
+    }
+    const reader = new FileReader();
+    reader.readAsText(file, "UTF-8");
+    reader.onload = (evt) => {
+      if (!evt.target.result) {
         return;
       }
-      const reader = new FileReader();
-      reader.readAsText(file, "UTF-8");
-      reader.onload = (evt) => {
-        if (!evt.target.result) {
-          return;
-        }
-        const jsonObject = JSON.parse(String(evt.target.result));
-        console.log({jsonObject})
-        setMessages(jsonObject);
-      };
-    },
-    []
-  );
+      const jsonObject = JSON.parse(String(evt.target.result));
+      console.log({ jsonObject });
+      setMessages(jsonObject);
+    };
+  }, []);
 
   const uploadImage = useCallback(async (evt) => {
     const files = evt.target.files;
@@ -81,18 +78,13 @@ export const useDefaultLogic = () => {
       const newMessages = [
         ...messages,
         {
-          sender: "Human: ",
-          message:
+          role: "user",
+          content:
             prompt + (image ? `\n ![attachment](${image?.Location})` : ""),
         },
       ];
 
       setMessages(newMessages);
-
-      const conversation = newMessages.reduce(
-        (prev, curr, index) => prev + curr.sender + curr.message + "\n",
-        ""
-      );
 
       setPrompt("");
       setLoading(true);
@@ -103,7 +95,7 @@ export const useDefaultLogic = () => {
           "content-type": "application/json",
         },
         body: JSON.stringify({
-          prompt: conversation,
+          messages: newMessages,
           attachment: image?.Location,
           context,
         }),
@@ -117,8 +109,8 @@ export const useDefaultLogic = () => {
       setMessages((currentMessages) => [
         ...currentMessages,
         {
-          sender: "AI: ",
-          message: result,
+          role: "assistant",
+          content: result,
         },
       ]);
     },

@@ -63,9 +63,9 @@ export default function Home() {
 
   const renderedMessages = useMemo(
     () =>
-      [...messages].reverse().map(({ sender, message }, index) => {
-        const latex = [...message.matchAll(/\$.*?\$/g)];
-        let formatted = latex.length ? message.replaceAll("`", "") : message;
+      [...messages].reverse().map(({ role, content }, index) => {
+        const latex = [...content.matchAll(/\$.*?\$/g)];
+        let formatted = latex.length ? content.replaceAll("`", "") : content;
         let desmos = [];
 
         formatted = formatted.replace(
@@ -81,11 +81,11 @@ export default function Home() {
         return (
           <div
             className={`${styles.message} ${
-              sender.includes("Human") && styles.human
+              role === 'user' && styles.human
             }`}
             key={index}
           >
-            {sender}
+            {role}
             <ReactMarkdown
               rehypePlugins={[rehypeRaw, rehypeKatex]}
               remarkPlugins={[remarkMath]}

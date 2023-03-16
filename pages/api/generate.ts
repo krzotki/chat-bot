@@ -62,48 +62,36 @@ export default async function (req, res) {
 
     const mathpix = await response.json();
 
-    // const mathpix = {
-    //   data: [
-    //     {
-    //       type: "asciimath",
-    //       value: "x^(2)+2x-4=0",
-    //     },
-    //   ],
-    //   text: "\\( x^{2}+2 x-4=0 \\)",
-    //   version: "RSK-M107p2",
-    //   confidence: 1,
-    //   is_printed: false,
-    //   request_id: "2022_12_27_d6b6ca12538ecc08cdd8g",
-    //   image_width: 1516,
-    //   image_height: 562,
-    //   is_handwritten: true,
-    //   confidence_rate: 1,
-    //   auto_rotate_degrees: 0,
-    //   auto_rotate_confidence: 0.000033496688260470364,
-    // };
-
     image = {
       src: attachment,
       text: mathpix.text,
     };
   }
 
-  const prompt =
-    context + req.body.prompt + (image ? image.text : ".") + "AI: ";
+  const messages = req.body.messages;
 
-  const completion = await openai.createCompletion({
-    model: "text-davinci-003",
-    prompt,
+  if (image?.text) {
+    messages[messages.length - 1].content += `\n ${image.text}`;
+  }
+
+  console.log({ messages });
+  const completion = await openai.createChatCompletion({
+    model: "gpt-4",
     temperature: 0.9,
     max_tokens: 2048,
-    stop: [" Human:", " AI:"],
+    messages: [
+      {
+        role: "system",
+        content: context,
+      },
+      ...messages,
+    ],
     top_p: 1,
     frequency_penalty: 0,
     presence_penalty: 0.6,
-    best_of: 1,
   });
 
   res.status(200).json({
-    result: completion.data.choices[0].text,
+    result: completion.data.choices[0].message.content,
   });
 }
