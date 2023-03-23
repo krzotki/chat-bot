@@ -17,6 +17,7 @@ import rehypeKatex from "rehype-katex";
 import "katex/dist/katex.min.css"; // `rehype-katex` does not import the CSS for you
 import { DesmosCalculator } from "../components/desmos";
 import { useDefaultLogic } from "@client";
+import InnerHTML from "dangerously-set-html-content";
 
 SyntaxHighlighter.registerLanguage("tsx", tsx);
 SyntaxHighlighter.registerLanguage("typescript", typescript);
@@ -29,6 +30,11 @@ SyntaxHighlighter.registerLanguage("python", python);
 const CodeBlock = {
   code({ node, inline, className, children, ...props }) {
     const match = /language-(\w+)/.exec(className || "");
+
+    if (match?.[1].toLowerCase() === "html") {
+      return <InnerHTML html={children} />;
+    }
+
     return !inline && match ? (
       <SyntaxHighlighter
         style={vscDarkPlus}
@@ -58,7 +64,7 @@ export default function Home() {
     image,
     saveConversation,
     jsonFileInputRef,
-    loadJsonFile
+    loadJsonFile,
   } = useDefaultLogic();
 
   const renderedMessages = useMemo(
@@ -80,9 +86,7 @@ export default function Home() {
 
         return (
           <div
-            className={`${styles.message} ${
-              role === 'user' && styles.human
-            }`}
+            className={`${styles.message} ${role === "user" && styles.human}`}
             key={index}
           >
             {role}
@@ -99,7 +103,7 @@ export default function Home() {
       }),
     [messages]
   );
-
+  console.log({ messages });
   return (
     <div className={styles.container}>
       <Head>

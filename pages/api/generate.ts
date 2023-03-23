@@ -21,25 +21,30 @@ const solverSkills = [
   "If there is a function to draw, he provides a Latex syntax for it to use it with desmos and wraps the function with <desmos>.",
   "In Latex, he precedes any multi-character symbol by a leading backslash - for example <desmos> f(x) = \\sin(x) </desmos> - important. ",
   "If function has any params, he writes default values for them and wraps them with <desmos> - for example <desmos> f(x) = A * \\sin(x) </desmos> <desmos>A = 1</desmos>",
+  `If asked to draw something, the assistant will be eager to do so. 
+    He uses canvas to draw the requested image by providing single HTML block with JS code block (with own scope) required to draw it - for example 
+    \`\`\`html
+    <div>
+      <canvas id="some-random-id">
+      </canvas>
+      <script>
+      {
+        const canvas = document.getElementById("some-random-id");
+        // draw something here
+      }
+      </script>
+    </div>. 
+    \`\`\`
+    The canvas element should not have a border.`,
   "He can provide step by step explanation to given mathematical solution if asked.",
 ];
-
+console.log({solverSkills})
 const solverContext = defaultContext + solverSkills.join(" ");
-
-const thesisSkills = [
-  "He is sciencist.",
-  "He wrote and reviewed thousands of computer science thesis.",
-  "He knows all about modern and classic algorithms.",
-  "He always provides source of his information in form of article names or links.",
-  "He talks in scientific language.",
-];
-
-const thesisContext = defaultContext + thesisSkills.join(" ");
 
 export default async function (req, res) {
   let image = null;
 
-  const context = req.body.context === "solver" ? solverContext : thesisContext;
+  const context = solverContext;
 
   const attachment = req.body.attachment;
 
@@ -77,8 +82,8 @@ export default async function (req, res) {
   console.log({ messages });
   const completion = await openai.createChatCompletion({
     model: "gpt-4",
-    temperature: 0.9,
-    max_tokens: 2048,
+    temperature: 0.7,
+    max_tokens: 4096,
     messages: [
       {
         role: "system",
