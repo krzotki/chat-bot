@@ -27,3 +27,5 @@ This bot is desgined to give insights on any problem, but focuses mostly on math
 ![Zrzut ekranu 2022-12-27 164543](https://user-images.githubusercontent.com/52164548/209691665-63662241-36b1-42ce-a160-2c5c4491bd77.png)
 ![Zrzut ekranu 2022-12-27 164918](https://user-images.githubusercontent.com/52164548/209691713-9a3356b2-7576-4666-879f-fbad6ce48876.png)
 
+## Drawing on canvas
+![Screenshot 2023-03-27 at 11 48 19](https://user-images.githubusercontent.com/52164548/227906595-6c29a1ee-9244-4111-a2a6-9b8437d5e511.png)
