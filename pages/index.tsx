@@ -31,9 +31,9 @@ const CodeBlock = {
   code({ node, inline, className, children, ...props }) {
     const match = /language-(\w+)/.exec(className || "");
 
-    if (match?.[1].toLowerCase() === "html") {
-      return <InnerHTML html={children} />;
-    }
+    // if (match?.[1].toLowerCase() === "html") {
+    //   return <InnerHTML html={children} />;
+    // }
 
     return !inline && match ? (
       <SyntaxHighlighter
