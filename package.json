@@ -6,6 +6,7 @@
     "dev": "next dev",
     "build": "next build",
     "start": "next build && node prod.js",
+    "start-docker": "docker run -p 3000:3000 --name chat-bot -m 100m --cpus 0.1 chat-bot",
     "lint": "next lint"
   },
   "dependencies": {
