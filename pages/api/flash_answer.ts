@@ -20,10 +20,27 @@ const context = [
   "If the answer is partially correct, assistant will complete the answer.",
   "If the answer is incomplete, assistant will complete the answer.",
   "ALWAYS provides FULL answer to the question.",
+  "Assistant responds with two asnwers, one based on user's answer and a second which is completly created by the assistant.",
   "Question and answer can be in different languages, but assistant is prepared for that because he knows all languages.",
   "He is really good at Polish language.",
   "Assistant uses markdown language when providing answer.",
   "If assistant's answer contains any special keywords he wraps them as links and makes it bold.",
+  "If user asks to explain like he is 5, explain using simpler terms and keywords.",
+  "Assistant uses polish language.",
+  `Example:
+  Topic: Bazy danych
+  Question: Omów pojęcie indeksu. 
+  User answer: Indeks przyspiesza wyszukiwanie danych
+  Assistant answer: 
+    W relacyjnej bazie danych indeks służy do przyspieszenia wykonywania zapytań 
+    służących do wyszukiwania danych. Kiedy nasza tabela posiada przykładowo 1 milion 
+    rekordów i naszym zadaniem wyszukanie jest pewnego rekordu:
+    • W przypadku braku zdefiniowanych indeksów baza danych wyszukuje KAŻDY 
+    WIERSZ w poszukiwaniu interesującej nas krotki, co wielokrotnie zwiększa czas 
+    oczekiwania na otrzymanie wyniku
+    • Kiedy nasza tabela ma zdefiniowane indeksy, rekordy zwracane są o wiele 
+    szybcie
+  `,
 ].join(" ");
 
 const USER_ANSWER_THRESHOLD = 0.25;
@@ -31,7 +48,7 @@ const TOPIC_THRESHOLD = 0.66;
 const QUESTION_THRESHOLD = 0.8;
 
 export default async function (req, res) {
-  const { topic, question, userAnswer } = req.body;
+  const { topic, question, userAnswer, lastAnswer } = req.body;
 
   const { Items } = await ddb.scan({ TableName: "flashcards" }).promise();
 
@@ -50,15 +67,15 @@ export default async function (req, res) {
   }).sort((a, b) => {
     const topicSimA = compareTwoStrings(a.topic, topic);
     const questionSimA = compareTwoStrings(a.question, question);
-    const userAnswerSimA = compareTwoStrings(a.userAnswer, userAnswer);
+    // const userAnswerSimA = compareTwoStrings(a.userAnswer, userAnswer);
     const ratingA = a.likes / (a.likes + a.dislikes);
-    const simA = topicSimA * questionSimA * userAnswerSimA * ratingA;
+    const simA = topicSimA * questionSimA * ratingA;
 
     const topicSimB = compareTwoStrings(b.topic, topic);
     const questionSimB = compareTwoStrings(b.question, question);
-    const userAnswerSimB = compareTwoStrings(b.userAnswer, userAnswer);
+    // const userAnswerSimB = compareTwoStrings(b.userAnswer, userAnswer);
     const ratingB = b.likes / (b.likes + b.dislikes);
-    const simB = topicSimB * questionSimB * userAnswerSimB * ratingB;
+    const simB = topicSimB * questionSimB * ratingB;
 
     return simB - simA;
   });
@@ -74,7 +91,20 @@ export default async function (req, res) {
     return;
   }
 
-  const prompt = `${context} \n Topic: ${topic} \n Question: ${question} \n User answer: ${userAnswer} \n Assistant answer: `;
+  const prompt = `
+  ${context}
+  Topic: ${topic}
+  Question: ${question}
+  User answer: 
+  ${
+    lastAnswer
+      ? `Niestety nie znam odpowiedzi na te pytanie. Wyjaśnij odpowiedź tak jakbym miał 5 lat.`
+      : userAnswer
+  }
+  Assistant answer:
+  `;
+
+  console.log({ prompt, lastAnswer });
 
   try {
     console.log({ prompt });
@@ -93,7 +123,9 @@ export default async function (req, res) {
     console.log({ completion });
 
     res.status(200).json({
-      result: completion.data.choices[0].text,
+      result: `
+      ${lastAnswer ? lastAnswer : ""} 
+      ${completion.data.choices[0].text}`,
       error: false,
       cached: null,
     });

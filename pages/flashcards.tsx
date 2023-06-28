@@ -153,6 +153,7 @@ export default function Home() {
         topic,
         question,
         userAnswer: answer,
+        lastAnswer: aiAnswer,
       }),
     });
 
@@ -163,11 +164,11 @@ export default function Home() {
     if (error) {
       setError(true);
     }
-  }, [answerTextareaRef, currentQuestion]);
+  }, [answerTextareaRef, currentQuestion, aiAnswer]);
 
   const onDontKnow = React.useCallback(() => {
     answerTextareaRef.current.value =
-      "Unfortunately, I don't know the answer to this question.";
+      "Niestety nie znam odpowiedzi na te pytanie.";
     onSubmitAnswer();
   }, [onSubmitAnswer, answerTextareaRef]);
 
@@ -351,6 +352,12 @@ export default function Home() {
                   ) : (
                     <div className={styles.thanks}>Thanks for voting!</div>
                   )}
+                  <button
+                    onClick={onSubmitAnswer}
+                    className={cx(styles.button, styles.buttonYellow)}
+                  >
+                    Explain like I am 5
+                  </button>
                   <button
                     onClick={nextQuestion}
                     className={cx(styles.button, styles.buttonBlue)}

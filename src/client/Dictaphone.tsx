@@ -29,7 +29,7 @@ export const Dictaphone = ({ sendTrascript }: PropsType) => {
       <p>Microphone: {listening ? "on" : "off"}</p>
       <button
         onClick={() =>
-          SpeechRecognition.startListening({ language: "en", continuous: true })
+          SpeechRecognition.startListening({ language: "pl", continuous: true })
         }
       >
         Start
