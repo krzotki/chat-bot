@@ -55,15 +55,11 @@ export default async function (req, res) {
   const similarQuestions = Items.filter((item) => {
     const topicSim = compareTwoStrings(item.topic, topic);
     const questionSim = compareTwoStrings(item.question, question);
-    const userAnswerSim = compareTwoStrings(item.userAnswer, userAnswer);
+    // const userAnswerSim = compareTwoStrings(item.userAnswer, userAnswer);
 
-    console.log({ topicSim, questionSim, userAnswerSim });
+    // console.log({ topicSim, questionSim, userAnswerSim });
 
-    return (
-      topicSim >= TOPIC_THRESHOLD &&
-      questionSim >= QUESTION_THRESHOLD &&
-      userAnswerSim >= USER_ANSWER_THRESHOLD
-    );
+    return topicSim >= TOPIC_THRESHOLD && questionSim >= QUESTION_THRESHOLD;
   }).sort((a, b) => {
     const topicSimA = compareTwoStrings(a.topic, topic);
     const questionSimA = compareTwoStrings(a.question, question);
