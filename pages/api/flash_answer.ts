@@ -46,6 +46,7 @@ const context = [
 const USER_ANSWER_THRESHOLD = 0.25;
 const TOPIC_THRESHOLD = 0.66;
 const QUESTION_THRESHOLD = 0.8;
+const RATING_THRESHOLD = 4;
 
 export default async function (req, res) {
   const { topic, question, userAnswer, lastAnswer } = req.body;
@@ -60,21 +61,26 @@ export default async function (req, res) {
     // console.log({ topicSim, questionSim, userAnswerSim });
 
     return topicSim >= TOPIC_THRESHOLD && questionSim >= QUESTION_THRESHOLD;
-  }).sort((a, b) => {
-    const topicSimA = compareTwoStrings(a.topic, topic);
-    const questionSimA = compareTwoStrings(a.question, question);
-    // const userAnswerSimA = compareTwoStrings(a.userAnswer, userAnswer);
-    const ratingA = a.likes / (a.likes + a.dislikes);
-    const simA = topicSimA * questionSimA * ratingA;
+  })
+    .filter((answer) => {
+      const rating = answer.likes / (answer.likes + answer.dislikes);
+      return rating >= RATING_THRESHOLD;
+    })
+    .sort((a, b) => {
+      const topicSimA = compareTwoStrings(a.topic, topic);
+      const questionSimA = compareTwoStrings(a.question, question);
+      // const userAnswerSimA = compareTwoStrings(a.userAnswer, userAnswer);
+      const ratingA = a.likes / (a.likes + a.dislikes);
+      const simA = topicSimA * questionSimA * ratingA;
 
-    const topicSimB = compareTwoStrings(b.topic, topic);
-    const questionSimB = compareTwoStrings(b.question, question);
-    // const userAnswerSimB = compareTwoStrings(b.userAnswer, userAnswer);
-    const ratingB = b.likes / (b.likes + b.dislikes);
-    const simB = topicSimB * questionSimB * ratingB;
+      const topicSimB = compareTwoStrings(b.topic, topic);
+      const questionSimB = compareTwoStrings(b.question, question);
+      // const userAnswerSimB = compareTwoStrings(b.userAnswer, userAnswer);
+      const ratingB = b.likes / (b.likes + b.dislikes);
+      const simB = topicSimB * questionSimB * ratingB;
 
-    return simB - simA;
-  });
+      return simB - simA;
+    });
 
   console.log({ similarQuestions });
 
