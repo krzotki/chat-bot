@@ -78,7 +78,7 @@ export default async function (req, res) {
 
   console.log({ similarQuestions });
 
-  if (similarQuestions.length) {
+  if (similarQuestions.length && !lastAnswer) {
     res.status(200).json({
       result: similarQuestions[0].answer,
       error: false,
