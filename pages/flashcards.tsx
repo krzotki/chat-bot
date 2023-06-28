@@ -317,48 +317,50 @@ export default function Home() {
                     </div>
                   )}
                 </div>
-                <div className={styles.buttons}>
-                  {!hasRated ? (
-                    <>
-                      <button
-                        className={cx(styles.buttonRound)}
-                        onClick={() => rateAnswer("like")}
-                      >
-                        <Image
-                          src="/like.png"
-                          width={30}
-                          height={30}
-                          alt="like"
-                        />
-                      </button>
-                      <button
-                        className={cx(styles.buttonRound)}
-                        onClick={() => rateAnswer("dislike")}
-                      >
-                        <Image
-                          src="/dislike.png"
-                          width={30}
-                          height={30}
-                          alt="dislike"
-                        />
-                      </button>
-                    </>
-                  ) : (
-                    <div className={styles.thanks}>Thanks for voting!</div>
-                  )}
-                  <button
-                    onClick={onSubmitAnswer}
-                    className={cx(styles.button, styles.buttonYellow)}
-                  >
-                    Explain like I am 5
-                  </button>
-                  <button
-                    onClick={nextQuestion}
-                    className={cx(styles.button, styles.buttonBlue)}
-                  >
-                    Next question
-                  </button>
-                </div>
+                {!loading && (
+                  <div className={styles.buttons}>
+                    {!hasRated ? (
+                      <>
+                        <button
+                          className={cx(styles.buttonRound)}
+                          onClick={() => rateAnswer("like")}
+                        >
+                          <Image
+                            src="/like.png"
+                            width={30}
+                            height={30}
+                            alt="like"
+                          />
+                        </button>
+                        <button
+                          className={cx(styles.buttonRound)}
+                          onClick={() => rateAnswer("dislike")}
+                        >
+                          <Image
+                            src="/dislike.png"
+                            width={30}
+                            height={30}
+                            alt="dislike"
+                          />
+                        </button>
+                      </>
+                    ) : (
+                      <div className={styles.thanks}>Thanks for voting!</div>
+                    )}
+                    <button
+                      onClick={onSubmitAnswer}
+                      className={cx(styles.button, styles.buttonYellow)}
+                    >
+                      Explain like I am 5
+                    </button>
+                    <button
+                      onClick={nextQuestion}
+                      className={cx(styles.button, styles.buttonBlue)}
+                    >
+                      Next question
+                    </button>
+                  </div>
+                )}
               </>
             )}
           </div>

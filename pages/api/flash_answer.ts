@@ -121,7 +121,7 @@ export default async function (req, res) {
     console.log({ completion });
 
     res.status(200).json({
-      result: `${lastAnswer ? `${lastAnswer}\n` : ""}${
+      result: `${lastAnswer ? `${lastAnswer}\n \n` : ""}${
         completion.data.choices[0].message.content
       }`,
       error: false,
