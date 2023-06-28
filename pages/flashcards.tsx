@@ -306,13 +306,7 @@ export default function Home() {
             {aiAnswer && (
               <>
                 <div className={cx(styles.answer)}>
-                  <ReactMarkdown
-                    rehypePlugins={[rehypeRaw, rehypeKatex]}
-                    remarkPlugins={[remarkMath]}
-                    components={CodeBlock}
-                  >
-                    {aiAnswer}
-                  </ReactMarkdown>
+                  {aiAnswer}
                   {rating && (
                     <div>
                       <Typography component="legend">Rating</Typography>

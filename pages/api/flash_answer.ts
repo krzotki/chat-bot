@@ -20,10 +20,10 @@ const context = [
   "If the answer is partially correct, assistant will complete the answer.",
   "If the answer is incomplete, assistant will complete the answer.",
   "ALWAYS provides FULL answer to the question.",
-  "Assistant responds with two asnwers, one based on user's answer and a second which is completly created by the assistant.",
+  // "Assistant responds with two asnwers, one based on user's answer and a second which is completly created by the assistant.",
   "Question and answer can be in different languages, but assistant is prepared for that because he knows all languages.",
   "He is really good at Polish language.",
-  "Assistant uses markdown language when providing answer.",
+  // "Assistant uses markdown language when providing answer.",
   "If assistant's answer contains any special keywords he wraps them as links and makes it bold.",
   "If user asks to explain like he is 5, explain using simpler terms and keywords.",
   "Assistant uses polish language.",
@@ -104,16 +104,19 @@ export default async function (req, res) {
 
   try {
     console.log({ prompt });
-    const completion = await openai.createCompletion({
-      model: "text-davinci-003",
-      prompt,
+    const completion = await openai.createChatCompletion({
+      model: "gpt-4",
       temperature: 0.9,
-      max_tokens: 2048,
-      stop: ["Assistant answer:"],
+      max_tokens: 768,
       top_p: 1,
       frequency_penalty: 0,
       presence_penalty: 0.6,
-      best_of: 1,
+      messages: [
+        {
+          role: "system",
+          content: prompt,
+        },
+      ],
     });
 
     console.log({ completion });
@@ -121,7 +124,7 @@ export default async function (req, res) {
     res.status(200).json({
       result: `
       ${lastAnswer ? lastAnswer : ""} 
-      ${completion.data.choices[0].text}`,
+      ${completion.data.choices[0].message.content}`,
       error: false,
       cached: null,
     });
