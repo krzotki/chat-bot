@@ -56,9 +56,9 @@ export default async function (req, res) {
   const similarQuestions = Items.filter((item) => {
     const topicSim = compareTwoStrings(item.topic, topic);
     const questionSim = compareTwoStrings(item.question, question);
-    // const userAnswerSim = compareTwoStrings(item.userAnswer, userAnswer);
+    const userAnswerSim = compareTwoStrings(item.userAnswer, userAnswer);
 
-    // console.log({ topicSim, questionSim, userAnswerSim });
+    console.log({ topicSim, questionSim, userAnswerSim });
 
     return topicSim >= TOPIC_THRESHOLD && questionSim >= QUESTION_THRESHOLD;
   })
@@ -69,15 +69,15 @@ export default async function (req, res) {
     .sort((a, b) => {
       const topicSimA = compareTwoStrings(a.topic, topic);
       const questionSimA = compareTwoStrings(a.question, question);
-      // const userAnswerSimA = compareTwoStrings(a.userAnswer, userAnswer);
+      const userAnswerSimA = compareTwoStrings(a.userAnswer, userAnswer);
       const ratingA = a.likes / (a.likes + a.dislikes);
-      const simA = topicSimA * questionSimA * ratingA;
+      const simA = topicSimA * questionSimA * ratingA * userAnswerSimA;
 
       const topicSimB = compareTwoStrings(b.topic, topic);
       const questionSimB = compareTwoStrings(b.question, question);
-      // const userAnswerSimB = compareTwoStrings(b.userAnswer, userAnswer);
+      const userAnswerSimB = compareTwoStrings(b.userAnswer, userAnswer);
       const ratingB = b.likes / (b.likes + b.dislikes);
-      const simB = topicSimB * questionSimB * ratingB;
+      const simB = topicSimB * questionSimB * ratingB * userAnswerSimB;
 
       return simB - simA;
     });
