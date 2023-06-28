@@ -248,7 +248,7 @@ export default function Home() {
     const rating = (likes / count) * 5;
     return { count, rating };
   }, [cachedQuestion]);
-
+  console.log({ aiAnswer });
   return (
     <div className={styles.container}>
       <Head>
@@ -306,7 +306,7 @@ export default function Home() {
             {aiAnswer && (
               <>
                 <div className={cx(styles.answer)}>
-                  {aiAnswer}
+                  <ReactMarkdown>{aiAnswer}</ReactMarkdown>
                   {rating && (
                     <div>
                       <Typography component="legend">Rating</Typography>

@@ -23,7 +23,7 @@ const context = [
   // "Assistant responds with two asnwers, one based on user's answer and a second which is completly created by the assistant.",
   "Question and answer can be in different languages, but assistant is prepared for that because he knows all languages.",
   "He is really good at Polish language.",
-  // "Assistant uses markdown language when providing answer.",
+  "Assistant uses markdown language when providing answer.",
   "If assistant's answer contains any special keywords he wraps them as links and makes it bold.",
   "If user asks to explain like he is 5, explain using simpler terms and keywords.",
   "Assistant uses polish language.",
@@ -39,7 +39,7 @@ const context = [
     WIERSZ w poszukiwaniu interesującej nas krotki, co wielokrotnie zwiększa czas 
     oczekiwania na otrzymanie wyniku
     • Kiedy nasza tabela ma zdefiniowane indeksy, rekordy zwracane są o wiele 
-    szybcie
+    szybciej
   `,
 ].join(" ");
 
@@ -97,8 +97,7 @@ export default async function (req, res) {
       ? `Niestety nie znam odpowiedzi na te pytanie. Wyjaśnij odpowiedź tak jakbym miał 5 lat.`
       : userAnswer
   }
-  Assistant answer:
-  `;
+  Assistant answer:`;
 
   console.log({ prompt, lastAnswer });
 
@@ -122,9 +121,9 @@ export default async function (req, res) {
     console.log({ completion });
 
     res.status(200).json({
-      result: `
-      ${lastAnswer ? lastAnswer : ""} 
-      ${completion.data.choices[0].message.content}`,
+      result: `${lastAnswer ? `${lastAnswer}\n` : ""}${
+        completion.data.choices[0].message.content
+      }`,
       error: false,
       cached: null,
     });
